@@ -10,8 +10,6 @@ const hashingOptions = {
 const hashPassword = (req, res, next) => {
   const password = req.body.password;
 
-  // why was it working with hashedPassword??
-
   argon2
     .hash(password, hashingOptions)
     .then((hashedPassword) => {
@@ -22,12 +20,19 @@ const hashPassword = (req, res, next) => {
 
       next();
     })
+    .verify(hashedPassword, password)
     .catch((err) => {
       console.error(err);
       res.sendStatus(500);
     });
 };
 
+const verifyPassword = (req, res) => {
+  res.send(req.user);
+  console.log(req.user);
+};
+
 module.exports = {
   hashPassword,
+  verifyPassword,
 };

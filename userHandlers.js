@@ -116,10 +116,41 @@ const deleteUser = (req, res) => {
     });
 };
 
+const logDwight = (req, res) => {
+  const { email, password } = req.body;
+  if (email === "dwight@theoffice.com" && password === "123456") {
+    res.send("Credentials are valid");
+  } else {
+    res.send(401);
+  }
+};
+
+const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
+  const { email } = req.body;
+
+  database
+    .query("select * from users where email = ?", [email])
+    .then(([users]) => {
+      if (users[0] != null) {
+        req.user = users[0];
+        res.send(req.user);
+        next();
+      } else {
+        res.sendStatus(401);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error retrieving data from database");
+    });
+};
+
 module.exports = {
   getUsers,
   getUserById,
   postUser,
   updateUser,
   deleteUser,
+  logDwight,
+  getUserByEmailWithPasswordAndPassToNext,
 };
